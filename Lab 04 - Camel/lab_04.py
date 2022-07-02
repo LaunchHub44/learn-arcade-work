@@ -23,33 +23,58 @@ def main():
     print("Survive your desert trek, and outrun the natives.")
     print()
 
+    # Hint, repeating with while loop can help validate input.
+    #
     print("Difficulty explanations are at the end of the game's code.")
-    difficulty = input("Play on Easy (Easy/E), Normal (Normal/N), or Hard (Hard/H)? ")
+    difficulty = None
 
-    if difficulty == "Easy" or difficulty == "easy" or difficulty == "E" or difficulty == "e":
-        player_min_speed = 10
-        player_max_speed = 16
-        native_min_speed = 4
-        native_max_speed = 8
-        thirst_limit = 10
-        stamina_limit = 20
-        camel_stamina = stamina_limit
-    elif difficulty == "Normal" or difficulty == "normal" or difficulty == "N" or difficulty == "n":
-        player_min_speed = 8
-        player_max_speed = 14
-        native_min_speed = 5
-        native_max_speed = 11
-        thirst_limit = 7
-        stamina_limit = 15
-        camel_stamina = stamina_limit
-    elif difficulty == "Hard" or difficulty == "hard" or difficulty == "H" or difficulty == "h":
-        player_min_speed = 7
-        player_max_speed = 14
-        native_min_speed = player_min_speed
-        native_max_speed = player_max_speed
-        thirst_limit = 5
-        stamina_limit = 10
-        camel_stamina = stamina_limit
+    def validate_difficulty(diff):
+        if diff is None:
+            return False
+
+        if diff.lower() == 'e' or diff.lower() == 'easy':
+            return True
+        elif diff.lower() == 'n' or diff.lower() == 'normal':
+            return True
+        elif diff.lower() == 'h' or diff.lower() == 'hard':
+            return True
+
+        return False
+
+    while True:
+        difficulty = input("Play on Easy (Easy/E), Normal (Normal/N), or Hard (Hard/H)? ")
+        if not validate_difficulty(difficulty):
+            print()
+            print("Please enter a valid difficulty level.")
+            continue
+
+        if difficulty == "Easy" or difficulty == "easy" or difficulty == "E" or difficulty == "e":
+            player_min_speed = 10
+            player_max_speed = 16
+            native_min_speed = 5
+            native_max_speed = 9
+            thirst_limit = 10
+            stamina_limit = 19
+            camel_stamina = stamina_limit
+            break
+        elif difficulty == "Normal" or difficulty == "normal" or difficulty == "N" or difficulty == "n":
+            player_min_speed = 9
+            player_max_speed = 14
+            native_min_speed = 7
+            native_max_speed = 11
+            thirst_limit = 8
+            stamina_limit = 14
+            camel_stamina = stamina_limit
+            break
+        elif difficulty == "Hard" or difficulty == "hard" or difficulty == "H" or difficulty == "h":
+            player_min_speed = 8
+            player_max_speed = 12
+            native_min_speed = player_min_speed
+            native_max_speed = player_max_speed
+            thirst_limit = 6
+            stamina_limit = 10
+            camel_stamina = stamina_limit
+            break
 
     while not done:
         print()
@@ -128,11 +153,32 @@ def main():
             print(f"The natives are {-dist_from_natives} miles behind you.")
 
         elif prompt == "Q" or prompt == "q":
+            print()
+            print("You surrender yourself to the natives,")
+            print("and as they take the camel back,")
+            print("they take you with them for your execution...")
             done = True
 
         else:
             print()
             print("That is not a valid option.")
+
+        if total_distance >= 200 and camel_stamina > 0:
+            print("You made it to the end! You win!")
+            done = True
+            break
+        elif total_distance >= 200 and camel_stamina < 1:
+            print("You got through the desert, but then your camel died.")
+            done = True
+            break
+        elif total_distance >= 200 and thirst > thirst_limit:
+            print("You've outrun the natives, but you died soon after.")
+            done = True
+            break
+        elif total_distance >= 200 and camel_stamina < 1 and thirst > thirst_limit:
+            print("You and your camel escape the desert, but you both collapse soon after.")
+            done = True
+            break
 
         if thirst > thirst_limit:
             print("You died of dehydration!")
@@ -140,7 +186,7 @@ def main():
         elif thirst > thirst_limit - 2:
             print("You're getting thirsty.")
 
-        if camel_stamina < 0:
+        if camel_stamina < 1:
             print("Your camel died of exhaustion!")
             done = True
         elif camel_stamina < 4:
@@ -151,10 +197,6 @@ def main():
             done = True
         elif dist_from_natives > -11:
             print("The natives are getting close!")
-
-        if total_distance >= 200:
-            print("You made it to the end! You win!")
-            done = True
 
     if total_distance < 200:
         print()
@@ -175,11 +217,11 @@ Easy:
 Normal:
 - You move slightly slower than you would in Easy mode.
 - You and your camel need to replenish occasionally.
-- The natives have are slightly slower than you.
+- The natives are slightly slower than you.
 - The natives cannot move if you're drinking.
 
 Hard:
-- You and the natives move at the same speed as each other.
+- You and the natives move at the same speed.
 - You and your camel need to replenish frequently.
 - The natives can move even while you drink.
 """
